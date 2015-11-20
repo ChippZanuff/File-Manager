@@ -3,7 +3,6 @@ import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.ScreenCharacterStyle;
 import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.TerminalSize;
 import ui.Cursor;
 
 import java.io.File;
@@ -50,12 +49,11 @@ public class StringLlist
 
         Screen screen = new Screen(terminal);
         screen.startScreen();
-        TerminalSize ts = screen.getTerminalSize();
         Key key = null;
         screen.getTerminal().setCursorVisible(false);
         Cursor cursor = new Cursor(screen);
 
-        int rows = ts.getRows();
+        int rows = screen.getTerminalSize().getRows();
         int startitr = 0;
         int enditr = (rows <= files.size()) ? rows : files.size();
 
