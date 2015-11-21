@@ -1,3 +1,5 @@
+import biz.FilesLists;
+import biz.PanelDraw;
 import com.googlecode.lanterna.TerminalFacade;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.screen.Screen;
@@ -12,55 +14,26 @@ import java.util.Objects;
 
 public class StringLlist
 {
-    public ArrayList<File> getFileList(String path)
-    {
-        File list = new File(path);
-
-        ArrayList<File> dirs = new ArrayList<>();
-        ArrayList<File> files = new ArrayList<>();
-
-        ArrayList<File> result = new ArrayList<>();
-
-        for (File item : list.listFiles())
-        {
-            if (item.isDirectory())
-            {
-                dirs.add(item);
-            }
-            if (item.isFile())
-            {
-                files.add(item);
-            }
-        }
-
-        result.addAll(dirs);
-        result.addAll(files);
-
-        if (list.getParent() != null)
-        {
-            result.add(0, new File(".."));
-        }
-        return result;
-    }
-
     public void terminal(ArrayList<File> files)
     {
         Terminal terminal = TerminalFacade.createTerminal(System.in, System.out);
+        FilesLists filesLists = new FilesLists();
 
         Screen screen = new Screen(terminal);
         screen.startScreen();
         Key key = null;
         screen.getTerminal().setCursorVisible(false);
         Cursor cursor = new Cursor(screen);
-
-        int rows = screen.getTerminalSize().getRows();
+        PanelDraw panelDraw = new PanelDraw(screen);
+        int rows = screen.getTerminalSize().getRows() - 2;
         int startitr = 0;
         int enditr = (rows <= files.size()) ? rows : files.size();
 
+
         while (key == null || key.getCharacter() != 'Y')
         {
-            int x = 0;
-            int y = 0;
+            int x = 1;
+            int y = 1;
 
             if (key != null)
             {
@@ -69,7 +42,7 @@ public class StringLlist
                 switch (key.getKind())
                 {
                     case ArrowDown:
-                        if(cursor.getRowPosition() < files.size() - 1 && !cursor.isBottom())
+                        if(cursor.getRowPosition() < files.size() && !cursor.isBottom())
                         {
                             cursor.moveDown();
                         }
@@ -92,11 +65,11 @@ public class StringLlist
                     case Enter:
                         if (cursor.getRowPosition() == 0 && Objects.equals(files.get(0).getName(), ".."))
                         {
-                            files = this.getFileList(this.getBaseName(files.get(1)));
+                            files = filesLists.getFileList(filesLists.getFileParent(files.get(1)));
                         }
                         else if (files.get(startitr + cursor.getRowPosition()).isDirectory())
                         {
-                            files = this.getFileList(files.get(startitr + cursor.getRowPosition()).getPath());
+                            files = filesLists.getFileList(files.get(startitr + cursor.getRowPosition()).getPath());
                         }
                         else if (files.get(startitr + cursor.getRowPosition()).isFile())
                         {
@@ -118,6 +91,7 @@ public class StringLlist
                         cursor.setRowPosition(0);
                 }
                 screen.clear();
+
                 for (File item : files.subList(startitr, enditr))
                 {
                     Terminal.Color c = Terminal.Color.BLUE;
@@ -127,17 +101,14 @@ public class StringLlist
                     }
                     screen.putString(x, y++, item.getName(), Terminal.Color.CYAN, c, ScreenCharacterStyle.Bold);
                 }
+                //panelDraw.panDraw();
                 screen.refresh();
-                screen.getTerminal().setCursorVisible(false);
+                //screen.getTerminal().setCursorVisible(false);
             }
-            //todo: check bottom...change from and to
             key = terminal.readInput();
         }
         screen.stopScreen();
     }
 
-    public String getBaseName(File file)
-    {
-        return new File(file.getParent()).getParent();
-    }
+
 }

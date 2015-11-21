@@ -31,7 +31,7 @@ public class Cursor
 
     public boolean isBottom()
     {
-        return tp.getRow() == screen.getTerminalSize().getRows() - 1;
+        return tp.getRow() == screen.getTerminalSize().getRows() - 3;
     }
 
     public int getRowPosition()
