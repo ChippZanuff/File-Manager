@@ -7,6 +7,26 @@ public class Cursor
 {
     Screen screen;
     TerminalPosition tp;
+    int defaultTopRow = 0;
+    int defaultBottomRow = 0;
+
+    public Cursor(Screen screen, int topRow, int bottomRow)
+    {
+        this.defaultTopRow = topRow;
+        this.defaultBottomRow = bottomRow;
+        this.screen = screen;
+        this.tp = screen.getCursorPosition();
+        this.tp.setRow(topRow);
+    }
+
+
+    public Cursor(Screen screen, int topRow)
+    {
+        this.defaultTopRow = topRow;
+        this.screen = screen;
+        this.tp = screen.getCursorPosition();
+        this.tp.setRow(topRow);
+    }
 
     public Cursor(Screen screen)
     {
@@ -21,7 +41,7 @@ public class Cursor
 
     public boolean isTop()
     {
-        return tp.getRow() == 0;
+        return tp.getRow() == this.defaultTopRow;
     }
 
     public void moveDown()
@@ -31,7 +51,7 @@ public class Cursor
 
     public boolean isBottom()
     {
-        return tp.getRow() == screen.getTerminalSize().getRows() - 3;
+        return tp.getRow() == screen.getTerminalSize().getRows() - this.defaultBottomRow;
     }
 
     public int getRowPosition()
@@ -42,5 +62,15 @@ public class Cursor
     public void setRowPosition(int position)
     {
         this.tp.setRow(position);
+    }
+
+    public void resetRowPosition()
+    {
+        tp.setRow(this.defaultTopRow);
+    }
+    public int getDefaultTopRow()
+    {
+        return this.defaultTopRow;
+
     }
 }

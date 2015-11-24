@@ -1,4 +1,4 @@
-package biz;
+package ui;
 
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.ScreenCharacterStyle;

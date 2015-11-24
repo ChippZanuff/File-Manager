@@ -1,5 +1,5 @@
 import biz.FilesLists;
-import biz.PanelDraw;
+import ui.PanelDraw;
 import com.googlecode.lanterna.TerminalFacade;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.screen.Screen;
@@ -10,39 +10,46 @@ import ui.Cursor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class StringLlist
 {
     public void terminal(ArrayList<File> files)
     {
+        int topRowPosition = 1;
+        int bottomRowPosition = 2;
+
         Terminal terminal = TerminalFacade.createTerminal(System.in, System.out);
         FilesLists filesLists = new FilesLists();
-
         Screen screen = new Screen(terminal);
         screen.startScreen();
         Key key = null;
-        screen.getTerminal().setCursorVisible(false);
-        Cursor cursor = new Cursor(screen);
+        Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition);
         PanelDraw panelDraw = new PanelDraw(screen);
+
         int rows = screen.getTerminalSize().getRows() - 2;
         int startitr = 0;
         int enditr = (rows <= files.size()) ? rows : files.size();
-
+        int filePosition = this.getFilePosition(cursor, startitr);
 
         while (key == null || key.getCharacter() != 'Y')
         {
             int x = 1;
-            int y = 1;
+            int y = topRowPosition;
 
             if (key != null)
             {
+                System.out.println("File pos:" + filePosition);
+                System.out.println("File row pos:" + cursor.getRowPosition());
                 System.out.println(key.getKind().name());
+
+                boolean isChild = (files.get(0) != null) && files.get(0).getName().equals("..");
 
                 switch (key.getKind())
                 {
                     case ArrowDown:
-                        if(cursor.getRowPosition() < files.size() && !cursor.isBottom())
+                        int fileSize = (isChild)?  files.size(): files.size();
+
+                        if(cursor.getRowPosition() < fileSize && !cursor.isBottom())
                         {
                             cursor.moveDown();
                         }
@@ -63,20 +70,22 @@ public class StringLlist
                         }
                         break;
                     case Enter:
-                        if (cursor.getRowPosition() == 0 && Objects.equals(files.get(0).getName(), ".."))
+                        System.out.println(filePosition);
+                        System.out.println(files.get(filePosition).getName());
+                        if (cursor.getRowPosition() == topRowPosition && isChild)
                         {
                             files = filesLists.getFileList(filesLists.getFileParent(files.get(1)));
                         }
-                        else if (files.get(startitr + cursor.getRowPosition()).isDirectory())
+                        else if (files.get(filePosition).isDirectory())
                         {
-                            files = filesLists.getFileList(files.get(startitr + cursor.getRowPosition()).getPath());
+                            files = filesLists.getFileList(files.get(filePosition).getPath());
                         }
-                        else if (files.get(startitr + cursor.getRowPosition()).isFile())
+                        else if (files.get(filePosition).isFile())
                         {
                             try
                             {
-                                String cmd = files.get(startitr + cursor.getRowPosition()).getPath();
-                                if (! files.get(startitr + cursor.getRowPosition()).canExecute())
+                                String cmd = files.get(filePosition).getPath();
+                                if (! files.get(filePosition).canExecute())
                                 {
                                     cmd = "start " + cmd;
                                 }
@@ -88,27 +97,41 @@ public class StringLlist
                         }
                         enditr = (rows <= files.size()) ? rows : files.size();
                         startitr = 0;
-                        cursor.setRowPosition(0);
+                        cursor.resetRowPosition();
+                        break;
                 }
+
                 screen.clear();
+
+                filePosition = this.getFilePosition(cursor, startitr);
 
                 for (File item : files.subList(startitr, enditr))
                 {
-                    Terminal.Color c = Terminal.Color.BLUE;
-                    if(cursor.getRowPosition() + startitr != files.indexOf(item))
+                    Terminal.Color itemColor =  Terminal.Color.CYAN;
+                    Terminal.Color selectedItemColor =  Terminal.Color.BLUE;
+                    Terminal.Color backgroundColor =  Terminal.Color.DEFAULT;
+                    if(item.isFile())
                     {
-                        c = Terminal.Color.DEFAULT;
+                        itemColor = Terminal.Color.WHITE;
                     }
-                    screen.putString(x, y++, item.getName(), Terminal.Color.CYAN, c, ScreenCharacterStyle.Bold);
+                    if (files.get(filePosition).getName().equals(item.getName())) {
+                        backgroundColor = selectedItemColor;
+                    }
+                    screen.putString(x, y++, item.getName(), itemColor, backgroundColor, ScreenCharacterStyle.Bold);
                 }
-                //panelDraw.panDraw();
+                panelDraw.panDraw();
+
                 screen.refresh();
-                //screen.getTerminal().setCursorVisible(false);
+                screen.getTerminal().setCursorVisible(false);
             }
             key = terminal.readInput();
         }
         screen.stopScreen();
     }
 
-
+    public int getFilePosition(Cursor cursor, int startitr)
+    {
+        int position = (cursor.getRowPosition() + startitr);
+        return (position > 0)?position - cursor.getDefaultTopRow(): position;
+    }
 }
