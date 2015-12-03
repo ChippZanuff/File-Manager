@@ -1,7 +1,6 @@
 package ui;
 
 import biz.FileSkipTake;
-import biz.MetaData;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.TerminalPosition;
 
@@ -91,27 +90,5 @@ public class Cursor
     {
         int position = (this.getRowPosition() + fileSkipTake.getSkip());
         return this.filePosition = (position > 0)?position - this.getDefaultTopRow(): position;
-    }
-
-    public void arrowDownForRoot(FileSkipTake fileSkipTake, MetaData metaData)
-    {
-        if (this.getRowPosition() < metaData.getRootDirectory().length && !this.isBottom())
-        {
-            this.moveDown();
-        } else if (fileSkipTake.getTake() < metaData.getRootDirectory().length)
-        {
-            fileSkipTake.increment();
-        }
-    }
-
-    public void arrowUpForRoot(FileSkipTake fileSkipTake)
-    {
-        if (!this.isTop())
-        {
-            this.moveUp();
-        } else if (fileSkipTake.getSkip() > 0)
-        {
-            fileSkipTake.decrement();
-        }
     }
 }
