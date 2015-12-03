@@ -16,12 +16,11 @@ public class FileOperations
     {
         try
         {
-            String cmd = file.getPath();
-            if (! file.canExecute())
-            {
-                cmd = "start " + cmd;
-            }
-            Runtime.getRuntime().exec(cmd);
+
+            String [] commands = {
+                    "cmd.exe", "/c", "start", "\"", file.getName() ,"\"", "\"" + file.getPath() + "\""
+            };
+            Runtime.getRuntime().exec(commands);
         } catch (IOException e)
         {
             System.out.println(e.getMessage());

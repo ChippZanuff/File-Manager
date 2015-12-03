@@ -16,7 +16,6 @@ public class StringLlist
 {
     public void terminal(ArrayList<File> files1, MetaData metaData)
     {
-
         int topRowPosition = 1;
         int bottomRowPosition = 2;
         ArrayList<File> files = files1;
@@ -31,7 +30,7 @@ public class StringLlist
         Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition);
         PanelDraw panelDraw = new PanelDraw(screen);
         FilesDrawing filesDrawing = new FilesDrawing(screen, cursor);
-        FileOperations fileOperations = new FileOperations(terminal, screen, cursor);
+        FileOperations fileOperations = new FileOperations();
         metaData.setScreen(screen);
 
         int rows = screen.getTerminalSize().getRows() - 2;
@@ -40,7 +39,7 @@ public class StringLlist
 
         while (key == null || key.getCharacter() != 'Y')
         {
-            if (key != null)
+            if (key.isAltPressed())
             {
                 System.out.println("File pos:" + cursor.getFilePosition(fileSkipTake));
                 System.out.println("File row pos:" + cursor.getRowPosition());
@@ -61,27 +60,22 @@ public class StringLlist
                         {
                             metaData.setPath(metaData.back());
                             files = metaData.getFiles();
-                        }
-                        else if (files.get(cursor.getFilePosition(fileSkipTake)).isDirectory())
+                            valueOfPositionsReseter(fileSkipTake, rows, cursor, files);
+                        } else if (files.get(cursor.getFilePosition(fileSkipTake)).isDirectory())
                         {
                             metaData.setPath(files.get(cursor.getFilePosition(fileSkipTake)).getPath());
                             files = metaData.getFiles();
-                        }
-                        else if (files.get(cursor.getFilePosition(fileSkipTake)).isFile())
+                            valueOfPositionsReseter(fileSkipTake, rows, cursor, files);
+                        } else if (files.get(cursor.getFilePosition(fileSkipTake)).isFile())
                         {
                             fileOperations.execute(files.get(cursor.getFilePosition(fileSkipTake)));
                         }
                         panelDraw.setSizeOfString(metaData.getSizeOfString());
-                        fileSkipTake.resetSkipper();
-                        fileSkipTake.setTake((rows <= files.size()) ? rows : files.size());
-                        cursor.resetRowPosition();
                         break;
                     case F1:
                         files = fileOperations.getRootDirectories(metaData);
                         panelDraw.setSizeOfString(metaData.getSizeOfString());
-                        fileSkipTake.resetSkipper();
-                        fileSkipTake.setTake((rows <= files.size()) ? rows : files.size());
-                        cursor.resetRowPosition();
+                        valueOfPositionsReseter(fileSkipTake, rows, cursor, files);
                         break;
                 }
                 screen.clear();
@@ -93,5 +87,12 @@ public class StringLlist
             key = terminal.readInput();
         }
         screen.stopScreen();
+    }
+
+    public void valueOfPositionsReseter(FileSkipTake fileSkipTake, int rows, Cursor cursor, ArrayList<File> files)
+    {
+        fileSkipTake.resetSkipper();
+        fileSkipTake.setTake((rows <= files.size()) ? rows : files.size());
+        cursor.resetRowPosition();
     }
 }
