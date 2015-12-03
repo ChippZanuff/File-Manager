@@ -3,7 +3,7 @@ package biz;
 import java.io.File;
 import java.util.ArrayList;
 
-public class FilesLists
+public class FilesRepository
 {
     public ArrayList<File> getFileList(String path)
     {
@@ -11,6 +11,7 @@ public class FilesLists
 
         ArrayList<File> dirs = new ArrayList<>();
         ArrayList<File> files = new ArrayList<>();
+
         ArrayList<File> result = new ArrayList<>();
 
         try

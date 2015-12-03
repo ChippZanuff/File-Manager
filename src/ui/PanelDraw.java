@@ -1,34 +1,61 @@
 package ui;
 
+import biz.MetaData;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.ScreenCharacterStyle;
 import com.googlecode.lanterna.terminal.Terminal;
 
+import java.io.File;
+
 public class PanelDraw
 {
     Screen screen;
+    MetaData metaData;
+    File file;
+    int sizeOfString = 0;
+    int row = 0;
+
     public PanelDraw(Screen screen)
     {
         this.screen = screen;
     }
 
-    public void panDraw()
+    public PanelDraw(File file)
+    {
+        this.file = file;
+    }
+
+    public void setSizeOfString(int sizeOfString)
+    {
+        this.sizeOfString = sizeOfString;
+    }
+
+    public void setFile(File file)
+    {
+        this.file = file;
+    }
+
+    public void setMetaData(MetaData metaData)
+    {
+        this.metaData = metaData;
+    }
+
+    public void panDraw(MetaData metaData)
     {
         char[] ch = new char[(screen.getTerminalSize().getColumns() / 2) - 2];
         String horizontal = this.replaceString(String.valueOf(ch) ,'\u0000', '═');
-        //String vertical = this.replaceString(String.valueOf(ch) ,'\u0000', ' ');
 
         this.displayLine(0, "╔" +  horizontal + "╗");
 
         for(int i = 1; i < screen.getTerminalSize().getRows() - 1; i++)
         {
-            //screen.getCursorPosition().setColumn(0);
             this.displayLine(0, i, "║");
             this.displayLine(screen.getTerminalSize().getColumns() / 2 - 1, i, "║");
-            //displayLine(i, "║" + vertical + "║");
         }
 
         this.displayLine(screen.getTerminalSize().getRows() - 1, "╚" + horizontal + "╝");
+
+        screen.putString((screen.getTerminalSize().getColumns() / 2  - sizeOfString) / 2, row, metaData.LocalFilePathnLength(metaData.getPath()), Terminal.Color.GREEN, Terminal.Color.DEFAULT, ScreenCharacterStyle.Bold);
     }
 
     public void displayLine(int column, int position, String text)
@@ -45,6 +72,4 @@ public class PanelDraw
     {
         return str.replace(from, to);
     }
-
-
 }

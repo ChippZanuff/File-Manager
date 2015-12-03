@@ -1,10 +1,16 @@
 package ui;
 
+import biz.FileSkipTake;
+import biz.MetaData;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.TerminalPosition;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class Cursor
 {
+    int filePosition;
     Screen screen;
     TerminalPosition tp;
     int defaultTopRow = 0;
@@ -17,21 +23,6 @@ public class Cursor
         this.screen = screen;
         this.tp = screen.getCursorPosition();
         this.tp.setRow(topRow);
-    }
-
-
-    public Cursor(Screen screen, int topRow)
-    {
-        this.defaultTopRow = topRow;
-        this.screen = screen;
-        this.tp = screen.getCursorPosition();
-        this.tp.setRow(topRow);
-    }
-
-    public Cursor(Screen screen)
-    {
-        this.screen = screen;
-        this.tp = screen.getCursorPosition();
     }
 
     public void moveUp()
@@ -59,18 +50,68 @@ public class Cursor
         return this.tp.getRow();
     }
 
-    public void setRowPosition(int position)
-    {
-        this.tp.setRow(position);
-    }
-
     public void resetRowPosition()
     {
         tp.setRow(this.defaultTopRow);
     }
+
     public int getDefaultTopRow()
     {
         return this.defaultTopRow;
+    }
 
+    public void moveDown(ArrayList<File> files, FileSkipTake fileSkipTake)
+    {
+        boolean isChild = (files.get(0) != null) && files.get(0).getName().equals("..");
+        int fileSize = (isChild)?  files.size(): files.size();
+
+        if(this.getRowPosition() < fileSize && !this.isBottom())
+        {
+            this.moveDown();
+        }
+        else if (fileSkipTake.getTake() < files.size())
+        {
+            fileSkipTake.increment();
+        }
+    }
+
+    public void moveUp(FileSkipTake fileSkipTake)
+    {
+        if (!this.isTop())
+        {
+            this.moveUp();
+        }
+        else if (fileSkipTake.getSkip() > 0)
+        {
+            fileSkipTake.decrement();
+        }
+    }
+
+    public int getFilePosition(FileSkipTake fileSkipTake)
+    {
+        int position = (this.getRowPosition() + fileSkipTake.getSkip());
+        return this.filePosition = (position > 0)?position - this.getDefaultTopRow(): position;
+    }
+
+    public void arrowDownForRoot(FileSkipTake fileSkipTake, MetaData metaData)
+    {
+        if (this.getRowPosition() < metaData.getRootDirectory().length && !this.isBottom())
+        {
+            this.moveDown();
+        } else if (fileSkipTake.getTake() < metaData.getRootDirectory().length)
+        {
+            fileSkipTake.increment();
+        }
+    }
+
+    public void arrowUpForRoot(FileSkipTake fileSkipTake)
+    {
+        if (!this.isTop())
+        {
+            this.moveUp();
+        } else if (fileSkipTake.getSkip() > 0)
+        {
+            fileSkipTake.decrement();
+        }
     }
 }
