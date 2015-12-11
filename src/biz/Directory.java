@@ -1,57 +1,107 @@
 package biz;
 
+import ui.Cursor;
+
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Directory
 {
-    private final FilesRepository fileRepository;
-    protected File directory;
+    private MetaData metaData;
+    private List<File> files;
+    private int skip = 0;
+    private int limit;
+    private int filesQuanity;
 
-    public Directory(FilesRepository fileRepository)
+    public Directory(MetaData metaData, int limit)
     {
-        this.fileRepository = fileRepository;
+        this.metaData = metaData;
+        this.limit = limit;
+        this.loadFiles();
     }
 
-    public void forward(String directoryPath)
+    public void increment()
     {
-        this.directory = new File(directoryPath);
+        if(this.getFileCount() > (this.skip + this.limit))
+        {
+            this.skip++;
+        }
+    }
+
+    public void decrement()
+    {
+        if (this.skip != 0)
+        {
+            this.skip--;
+        }
+    }
+
+    public int getFileCount()
+    {
+        return this.getAllFiles().size();
+    }
+
+    public List<File> getAllFiles()
+    {
+        return this.files;
+    }
+
+    public List<File> getFiles()
+    {
+        int size = (this.skip + this.limit);
+        if (size > this.getFileCount()) {
+            size = this.getFileCount();
+        }
+        return this.getAllFiles().subList(this.skip, size);
+    }
+
+    public File getFile(int index)
+    {
+        return this.getAllFiles().get(index);
+    }
+
+    public File getFile(Cursor cursor)
+    {
+        return this.getFile(this.getFilePosition(cursor));
+    }
+
+    public int getFilePosition(Cursor cursor)
+    {
+        int position = this.skip + cursor.getRowPosition();
+        return (position > 0)? position - cursor.getDefaultTopRow(): position;
     }
 
     public void back()
     {
-        this.directory = new File(this.directory.getParent());
+        this.metaData.back();
+        this.loadFiles();
     }
 
-    public ArrayList<File> getFiles()
+    public void setPath(String path)
     {
-        return this.fileRepository.getFileList(this.directory.getPath());
+        this.metaData.setPath(path);
+        this.loadFiles();
     }
 
-    public void execute(File file)
+    public MetaData getMetaData()
     {
-        try
-        {
-            String cmd = file.getPath();
-            if (! file.canExecute())
-            {
-                cmd = "start " + cmd;
-            }
-            Runtime.getRuntime().exec(cmd);
-        } catch (IOException e)
-        {
-            System.out.println(e.getMessage());
-        }
+        return this.metaData;
     }
 
-    public int getPathLength()
+    private void loadFiles()
     {
-        return this.directory.getPath().length();
+        this.files = this.metaData.getFiles();
     }
 
-    public String getPath()
+    public void showFiles()
     {
-        return this.directory.getPath();
+        this.metaData.showFiles();
+        this.loadFiles();
+    }
+
+    public void showRoots()
+    {
+        this.metaData.showRoots();
+        this.loadFiles();
     }
 }

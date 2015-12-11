@@ -1,22 +1,25 @@
-import biz.FilesLists;
+import biz.Directory;
 import biz.MetaData;
-
-import java.io.File;
-import java.util.ArrayList;
+import biz.StringLlist;
+import com.googlecode.lanterna.TerminalFacade;
+import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.terminal.Terminal;
 
 public class Main
 {
     public static void main(String[] args)
     {
-        StringLlist str = new StringLlist();
-        FilesLists filesLists = new FilesLists();
-        MetaData metaData = new MetaData("E:\\");
-        ArrayList<File> files = filesLists.getFileList("E:\\");
+        Terminal terminal = TerminalFacade.createTerminal(System.in, System.out);
+        Screen screen = new Screen(terminal);
+        Directory directoryLeft = new Directory(new MetaData("E:\\"), screen.getTerminalSize().getRows());
+        Directory directoryRight = new Directory(new MetaData("D:\\"), screen.getTerminalSize().getRows());
+        screen.startScreen();
+        StringLlist str = new StringLlist(directoryLeft, directoryRight, screen, terminal);
 
-        //Directory dir = new Directory(new FilesRepository());
+        //OldDirectory dir = new OldDirectory(new FilesRepository());
         //dir.forward("E:\\");
         //new FileManager().terminal(dir);
 
-        str.terminal(files, metaData);
+        str.terminal();
     }
 }

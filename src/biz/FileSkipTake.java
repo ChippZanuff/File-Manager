@@ -41,4 +41,5 @@ public class FileSkipTake
     {
         this.skip = 0;
     }
+
 }

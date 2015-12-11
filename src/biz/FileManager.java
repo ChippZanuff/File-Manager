@@ -13,19 +13,20 @@ import java.util.ArrayList;
 
 public class FileManager
 {
-    public void terminal(Directory directory)
+    public void terminal(OldDirectory oldDirectory)
     {
         int topRowPosition = 1;
         int bottomRowPosition = 2;
+        int defrowpos = 2;
 
         Terminal terminal = TerminalFacade.createTerminal(System.in, System.out);
         Screen screen = new Screen(terminal);
         screen.startScreen();
         Key key = null;
-        Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition);
+        Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition, defrowpos);
         PanelDraw panelDraw = new PanelDraw(screen);
 
-        ArrayList<File> files = directory.getFiles();
+        ArrayList<File> files = oldDirectory.getFiles();
 
         int rows = screen.getTerminalSize().getRows() - 2;
         int startitr = 0;
@@ -79,19 +80,19 @@ public class FileManager
 
                         if (cursor.getRowPosition() == topRowPosition && isChild)
                         {
-                            directory.back();
-                            files = directory.getFiles();
+                            oldDirectory.back();
+                            files = oldDirectory.getFiles();
                         }
                         else if (files.get(filePosition).isDirectory())
                         {
-                            directory.forward(files.get(filePosition).getPath());
-                            files = directory.getFiles();
+                            oldDirectory.forward(files.get(filePosition).getPath());
+                            files = oldDirectory.getFiles();
                         }
                         else if (files.get(filePosition).isFile())
                         {
-                            directory.execute(files.get(filePosition));
+                            oldDirectory.execute(files.get(filePosition));
                         }
-                        panelDraw.setSizeOfString(directory.getPathLength());
+                        panelDraw.setSizeOfString(oldDirectory.getPathLength());
 
                         enditr = (rows <= files.size()) ? rows : files.size();
                         startitr = 0;
@@ -117,7 +118,7 @@ public class FileManager
                     }
                     screen.putString(x, y++, item.getName(), itemColor, backgroundColor, ScreenCharacterStyle.Bold);
                 }
-                panelDraw.panDraw(new MetaData(directory.getPath()));
+                panelDraw.panDraw(new MetaData(oldDirectory.getPath()));
                 //todo path draw
 
                 screen.refresh();

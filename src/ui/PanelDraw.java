@@ -42,7 +42,7 @@ public class PanelDraw
 
     public void panDraw(MetaData metaData)
     {
-        char[] ch = new char[(screen.getTerminalSize().getColumns() / 2) - 2];
+        char[] ch = new char[screen.getTerminalSize().getColumns() - 2];
         String horizontal = this.replaceString(String.valueOf(ch) ,'\u0000', '═');
 
         this.displayLine(0, "╔" +  horizontal + "╗");
@@ -51,11 +51,15 @@ public class PanelDraw
         {
             this.displayLine(0, i, "║");
             this.displayLine(screen.getTerminalSize().getColumns() / 2 - 1, i, "║");
+            this.displayLine(99, i, "║");
+            this.displayLine(49, 0, "╦");
+            this.displayLine(49, 29, "╩");
         }
 
         this.displayLine(screen.getTerminalSize().getRows() - 1, "╚" + horizontal + "╝");
 
-        screen.putString((screen.getTerminalSize().getColumns() / 2  - sizeOfString) / 2, row, metaData.LocalFilePathnLength(metaData.getPath()), Terminal.Color.GREEN, Terminal.Color.DEFAULT, ScreenCharacterStyle.Bold);
+        screen.putString((screen.getTerminalSize().getColumns()  - sizeOfString) / 2 - 2, row, metaData.LocalFilePath(metaData.getPath()), Terminal.Color.GREEN, Terminal.Color.DEFAULT, ScreenCharacterStyle.Bold);
+        //screen.putString();
     }
 
     public void displayLine(int column, int position, String text)

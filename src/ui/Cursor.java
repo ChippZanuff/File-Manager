@@ -1,31 +1,35 @@
 package ui;
 
-import biz.FileSkipTake;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.TerminalPosition;
 
-import java.io.File;
-import java.util.ArrayList;
-
 public class Cursor
 {
-    int filePosition;
-    Screen screen;
-    TerminalPosition tp;
-    int defaultTopRow = 0;
-    int defaultBottomRow = 0;
+    private Screen screen;
+    private TerminalPosition tp;
+    private int defaultTopRow = 0;
+    private int defaultBottomRow = 0;
+    private int horizontalPosition = 0;
+    private int defaultColumnPosition = 0;
 
-    public Cursor(Screen screen, int topRow, int bottomRow)
+    public Cursor(Screen screen, int topRow, int bottomRow, int columnPosition)
     {
         this.defaultTopRow = topRow;
         this.defaultBottomRow = bottomRow;
         this.screen = screen;
         this.tp = screen.getCursorPosition();
         this.tp.setRow(topRow);
+        this.tp.setColumn(columnPosition);
+        this.defaultColumnPosition = columnPosition;
+        this.horizontalPosition = columnPosition;
     }
 
     public void moveUp()
     {
+        if (this.tp.getRow() == this.defaultTopRow)
+        {
+            return;
+        }
         this.tp.setRow(this.tp.getRow() - 1);
     }
 
@@ -36,12 +40,15 @@ public class Cursor
 
     public void moveDown()
     {
-        tp.setRow(tp.getRow() + 1);
+        if(!this.isBottom())
+        {
+            tp.setRow(tp.getRow() + 1);
+        }
     }
 
     public boolean isBottom()
     {
-        return tp.getRow() == screen.getTerminalSize().getRows() - this.defaultBottomRow;
+        return this.getRowPosition() == screen.getTerminalSize().getRows() - this.defaultBottomRow;
     }
 
     public int getRowPosition()
@@ -59,36 +66,37 @@ public class Cursor
         return this.defaultTopRow;
     }
 
-    public void moveDown(ArrayList<File> files, FileSkipTake fileSkipTake)
+    public void changeColumn()
     {
-        boolean isChild = (files.get(0) != null) && files.get(0).getName().equals("..");
-        int fileSize = (isChild)?  files.size(): files.size();
+        if(! this.isPositionLeft())
+        {
+            this.horizontalPosition = this.defaultColumnPosition;
+        }
+        else
+        {
+            this.horizontalPosition = (screen.getTerminalSize().getColumns() / 2) + this.defaultColumnPosition;
+        }
 
-        if(this.getRowPosition() < fileSize && !this.isBottom())
-        {
-            this.moveDown();
-        }
-        else if (fileSkipTake.getTake() < files.size())
-        {
-            fileSkipTake.increment();
-        }
+        this.tp.setColumn(this.horizontalPosition);
     }
 
-    public void moveUp(FileSkipTake fileSkipTake)
+    public int getDefaultColumnPosition()
     {
-        if (!this.isTop())
-        {
-            this.moveUp();
-        }
-        else if (fileSkipTake.getSkip() > 0)
-        {
-            fileSkipTake.decrement();
-        }
+        return this.defaultColumnPosition;
     }
 
-    public int getFilePosition(FileSkipTake fileSkipTake)
+    public int getColumn()
     {
-        int position = (this.getRowPosition() + fileSkipTake.getSkip());
-        return this.filePosition = (position > 0)?position - this.getDefaultTopRow(): position;
+        return this.tp.getColumn();
+    }
+
+    public boolean isPositionLeft()
+    {
+        return this.horizontalPosition == this.defaultColumnPosition;
+    }
+
+    public boolean isPositionRight()
+    {
+        return ! this.isPositionLeft();
     }
 }

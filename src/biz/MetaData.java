@@ -1,18 +1,17 @@
 package biz;
 
-import com.googlecode.lanterna.screen.Screen;
-
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MetaData
 {
-    Screen screen;
     FilesLists filesLists = new FilesLists();
     File file;
     File[] getRoot;
     String path;
     int sizeOfString;
+    private boolean isShowFiles = true;
 
     public MetaData(String path)
     {
@@ -22,10 +21,11 @@ public class MetaData
 
     public int getSizeOfString()
     {
+        this.setSizeOfString();
         return this.sizeOfString;
     }
 
-    public String LocalFilePathnLength(String path)
+    public String LocalFilePath(String path)
     {
         this.sizeOfString = path.length();
         return path;
@@ -41,24 +41,36 @@ public class MetaData
         this.file = new File(path);
     }
 
-    public String back()
+    public void back()
     {
-        return this.file.getParent();
+        this.setPath(this.file.getParent());
     }
 
-    public File[] getRootDirectory()
+    public ArrayList<File> getRootDirectory()
     {
-        this.getRoot = File.listRoots();
-        return getRoot;
-    }
-
-    public void setScreen(Screen screen)
-    {
-        this.screen = screen;
+        return new ArrayList<>(Arrays.asList(this.getRoot = File.listRoots()));
     }
 
     public ArrayList<File> getFiles()
     {
+        if (! this.isShowFiles) {
+            return this.getRootDirectory();
+        }
         return this.filesLists.getFileList(getPath());
+    }
+
+    public void showRoots()
+    {
+        this.isShowFiles = false;
+    }
+
+    public void showFiles()
+    {
+        this.isShowFiles = true;
+    }
+
+    public void setSizeOfString()
+    {
+        this.sizeOfString = this.path.length();
     }
 }

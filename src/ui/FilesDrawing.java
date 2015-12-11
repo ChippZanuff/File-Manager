@@ -1,49 +1,72 @@
 package ui;
 
 
-import biz.FileSkipTake;
+import biz.Directory;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.ScreenCharacterStyle;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class FilesDrawing
 {
-    Screen screen;
-    Cursor cursor;
+    private Screen screen;
+    private Cursor cursor;
+
     public FilesDrawing(Screen screen, Cursor cursor)
     {
         this.screen = screen;
         this.cursor = cursor;
     }
 
-    public void filesDrawing(ArrayList<File> files, FileSkipTake fileSkipTake)
+    public void filesDrawingBasic(File selectedFile, Directory directory, boolean checkSelected, int column)
     {
-        int defaultColumnPosition = 1;
-        int topRowDefaultPosition = 1;
-        for (File item : files.subList(fileSkipTake.getSkip(), fileSkipTake.getTake()))
+        int row = this.cursor.getDefaultTopRow();
+
+        for (File item : directory.getFiles())
         {
-            Terminal.Color itemColor =  Terminal.Color.CYAN;
-            Terminal.Color selectedItemColor =  Terminal.Color.BLUE;
-            Terminal.Color backgroundColor =  Terminal.Color.DEFAULT;
-            if(item.isFile())
-            {
-                itemColor = Terminal.Color.WHITE;
-            }
-            if (files.get(cursor.getFilePosition(fileSkipTake)).getPath().equals(item.getPath()))
-            {
-                backgroundColor = selectedItemColor;
-            }
-            if(! item.getName().equals(""))
-            {
-                screen.putString(defaultColumnPosition, topRowDefaultPosition++, item.getName(), itemColor, backgroundColor, ScreenCharacterStyle.Bold);
-            }
-            else
-            {
-                screen.putString(defaultColumnPosition, topRowDefaultPosition++, item.getPath(), itemColor, backgroundColor, ScreenCharacterStyle.Bold);
-            }
+            Terminal.Color backgroundColor = this.getBackgroundItemColor(selectedFile, item, checkSelected);
+
+            this.screen.putString(column, row++, this.getFileName(item), this.getItemColor(item), backgroundColor, ScreenCharacterStyle.Bold);
         }
+
+    }
+
+    public void filesDrawingBasicLeft(File selectedFile, Directory directory, boolean checkSelected)
+    {
+        this.filesDrawingBasic(selectedFile, directory, checkSelected, this.cursor.getDefaultColumnPosition());
+    }
+
+    public void filesDrawingBasicRight(File selectedFile, Directory directory, boolean checkSelected)
+    {
+        int column = (screen.getTerminalSize().getColumns() / 2) + this.cursor.getDefaultColumnPosition();
+        this.filesDrawingBasic(selectedFile, directory, checkSelected, column);
+    }
+
+    public Terminal.Color getBackgroundItemColor(File file, File selectedFile, boolean checkSelected)
+    {
+        if (checkSelected && file.getPath().equals(selectedFile.getPath()))
+        {
+            return Terminal.Color.BLUE;
+        }
+        return Terminal.Color.DEFAULT;
+    }
+
+    public Terminal.Color getItemColor(File file)
+    {
+        if(file.isFile())
+        {
+            return Terminal.Color.WHITE;
+        }
+        return Terminal.Color.CYAN;
+    }
+
+    public String getFileName(File file)
+    {
+        if(file.getName().equals(""))
+        {
+            return file.getPath();
+        }
+        return file.getName();
     }
 }
