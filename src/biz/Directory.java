@@ -11,7 +11,6 @@ public class Directory
     private List<File> files;
     private int skip = 0;
     private int limit;
-    private int filesQuanity;
 
     public Directory(MetaData metaData, int limit)
     {
