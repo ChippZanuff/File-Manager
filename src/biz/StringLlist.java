@@ -108,6 +108,8 @@ public class StringLlist
                         cursor.resetRowPosition();
 
                         break;
+                    case Delete:
+                        fileOperations.delete(currentFile);
                 }
                 currentFile = directory.getFile(cursor);
 

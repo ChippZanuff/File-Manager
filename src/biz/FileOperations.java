@@ -18,4 +18,19 @@ public class FileOperations
             System.out.println(e.getMessage());
         }
     }
+
+    public void delete(File currentFile)
+    {
+        try
+        {
+            if(currentFile.delete())
+            {
+                System.out.println(currentFile.getName() + " is deleted!");
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+    }
 }
