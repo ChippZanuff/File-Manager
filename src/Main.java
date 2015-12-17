@@ -11,8 +11,8 @@ public class Main
     {
         Terminal terminal = TerminalFacade.createTerminal(System.in, System.out);
         Screen screen = new Screen(terminal);
-        Directory directoryLeft = new Directory(new MetaData("E:\\"), screen.getTerminalSize().getRows());
-        Directory directoryRight = new Directory(new MetaData("D:\\"), screen.getTerminalSize().getRows());
+        Directory directoryLeft = new Directory(new MetaData("E:\\"), screen.getTerminalSize().getRows() - 3);
+        Directory directoryRight = new Directory(new MetaData("D:\\"), screen.getTerminalSize().getRows() - 3);
         screen.startScreen();
         StringLlist str = new StringLlist(directoryLeft, directoryRight, screen, terminal);
 
