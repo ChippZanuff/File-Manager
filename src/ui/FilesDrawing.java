@@ -63,10 +63,20 @@ public class FilesDrawing
 
     public String getFileName(File file)
     {
+        int sizeOfString = (this.screen.getTerminalSize().getColumns() / 2) - 2;
         if(file.getName().equals(""))
         {
             return file.getPath();
         }
-        return file.getName();
+        if(file.getName().length() > sizeOfString)
+        {
+            return file.getName().substring(0, sizeOfString) + "..";
+        }
+
+        int length = (sizeOfString < file.getName().length()) ? file.getName().length() : sizeOfString - file.getName().length();
+
+        char[] ch = new char[length];
+        String horizontal = String.valueOf(ch).replace('\u0000', ' ');
+        return file.getName() + horizontal;
     }
 }

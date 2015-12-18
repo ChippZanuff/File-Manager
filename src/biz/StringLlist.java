@@ -27,7 +27,7 @@ public class StringLlist
     public void terminal()
     {
         int topRowPosition = 1;
-        int bottomRowPosition = 2;
+        int bottomRowPosition = 3;
         int marginColumnPosition = 1;
 
         Key key = null;
@@ -86,11 +86,13 @@ public class StringLlist
                         directory.showFiles();
                         cursor.resetRowPosition();
                         panelDraw.setSizeOfString(directory.getMetaData().getSizeOfString());
+                        this.screen.clear();
                         break;
                     case F1:
 
                         directory.showRoots();
                         cursor.resetRowPosition();
+                        this.screen.clear();
                         break;
                     case Tab:
 
@@ -113,7 +115,6 @@ public class StringLlist
                 }
                 currentFile = directory.getFile(cursor);
 
-                screen.clear();
                 if(directory == this.directoryLeft)
                 {
                     filesDrawing.filesDrawingBasicRight(currentFile, this.directoryRight, false);
