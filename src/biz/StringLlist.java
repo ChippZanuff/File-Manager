@@ -3,9 +3,7 @@ package biz;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
-import ui.Cursor;
-import ui.FilesDrawing;
-import ui.PanelDraw;
+import ui.*;
 
 import java.io.File;
 
@@ -36,6 +34,8 @@ public class StringLlist
         PanelDraw panelDraw = new PanelDraw(screen);
         FilesDrawing filesDrawing = new FilesDrawing(screen, cursor);
         FileOperations fileOperations = new FileOperations();
+        Bar bar = new Bar(screen);
+        Notifications notifications = new Notifications(screen);
 
         Directory directory = this.directoryLeft;
 
@@ -114,7 +114,7 @@ public class StringLlist
                         fileOperations.delete(currentFile);
                 }
                 currentFile = directory.getFile(cursor);
-
+                
                 if(directory == this.directoryLeft)
                 {
                     filesDrawing.filesDrawingBasicRight(currentFile, this.directoryRight, false);
@@ -127,8 +127,11 @@ public class StringLlist
                 filesDrawing.filesDrawingBasic(currentFile, directory, true, cursor.getColumn());
 
                 panelDraw.panDraw(directory.getMetaData());
-                screen.refresh();
-                screen.getTerminal().setCursorVisible(false);
+
+                bar.barDrawing();
+
+                this.screen.refresh();
+                this.screen.getTerminal().setCursorVisible(false);
             }
             key = terminal.readInput();
         }
