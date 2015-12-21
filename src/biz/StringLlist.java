@@ -3,9 +3,7 @@ package biz;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
-import ui.Cursor;
-import ui.FilesDrawing;
-import ui.PanelDraw;
+import ui.*;
 
 import java.io.File;
 
@@ -30,12 +28,16 @@ public class StringLlist
         int bottomRowPosition = 3;
         int marginColumnPosition = 1;
 
+        boolean altIsPressed = false;
+        boolean ctrlIsPressed = false;
+
         Key key = null;
 
         Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition, marginColumnPosition);
         PanelDraw panelDraw = new PanelDraw(screen);
         FilesDrawing filesDrawing = new FilesDrawing(screen, cursor);
         FileOperations fileOperations = new FileOperations();
+        BarDrawer barDrawer = new BarDrawer(screen);
 
         Directory directory = this.directoryLeft;
 
@@ -89,7 +91,6 @@ public class StringLlist
                         this.screen.clear();
                         break;
                     case F1:
-
                         directory.showRoots();
                         cursor.resetRowPosition();
                         this.screen.clear();
@@ -112,9 +113,20 @@ public class StringLlist
                         break;
                     case Delete:
                         fileOperations.delete(currentFile);
+                        break;
                 }
-                currentFile = directory.getFile(cursor);
 
+                if(altIsPressed)
+                {
+                    barDrawer.barDrawing(new AltBar());
+                }
+                else if(ctrlIsPressed)
+                {
+                    barDrawer.barDrawing(new CtrlBar());
+                }
+
+                currentFile = directory.getFile(cursor);
+                
                 if(directory == this.directoryLeft)
                 {
                     filesDrawing.filesDrawingBasicRight(currentFile, this.directoryRight, false);
@@ -123,12 +135,14 @@ public class StringLlist
                 {
                     filesDrawing.filesDrawingBasicLeft(currentFile, this.directoryLeft, false);
                 }
-
                 filesDrawing.filesDrawingBasic(currentFile, directory, true, cursor.getColumn());
 
                 panelDraw.panDraw(directory.getMetaData());
-                screen.refresh();
-                screen.getTerminal().setCursorVisible(false);
+
+                barDrawer.barDrawing(new DefaultBar());
+
+                this.screen.refresh();
+                this.screen.getTerminal().setCursorVisible(false);
             }
             key = terminal.readInput();
         }

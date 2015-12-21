@@ -1,6 +1,9 @@
 package ui;
 
-public class Bar
-{
 
+import java.util.ArrayList;
+
+public interface Bar
+{
+    ArrayList<BottomBar> getList();
 }
