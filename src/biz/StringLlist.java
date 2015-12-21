@@ -32,12 +32,14 @@ public class StringLlist
         boolean ctrlIsPressed = false;
 
         Key key = null;
+        Key notifkey = null;
 
         Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition, marginColumnPosition);
         PanelDraw panelDraw = new PanelDraw(screen);
         FilesDrawing filesDrawing = new FilesDrawing(screen, cursor);
         FileOperations fileOperations = new FileOperations();
         BarDrawer barDrawer = new BarDrawer(screen, new DefaultBar());
+        Notifications notifications = new Notifications(screen);
 
         Directory directory = this.directoryLeft;
 
@@ -112,7 +114,29 @@ public class StringLlist
 
                         break;
                     case Delete:
-                        fileOperations.delete(currentFile);
+                        while (key == null || key.getCharacter() != '\n')
+                        {
+                            if (key != null)
+                            {
+                                switch (key.getKind())
+                                {
+                                    case ArrowLeft:
+                                        cursor.moveLeft();
+                                        break;
+                                    case ArrowRight:
+                                        cursor.moveRight();
+                                        break;
+                                    case Enter:
+                                        //if()
+                                        break;
+                                }
+                                notifications.notificationPanelDrawing();
+                                this.screen.refresh();
+                            }
+                            key = terminal.readInput();
+
+                        }
+                        //fileOperations.delete(currentFile);
                         break;
                 }
 
@@ -142,6 +166,7 @@ public class StringLlist
                 barDrawer.barDrawing(new DefaultBar());
 
                 this.screen.refresh();
+                System.out.println(topRowPosition);
                 this.screen.getTerminal().setCursorVisible(false);
             }
             key = terminal.readInput();

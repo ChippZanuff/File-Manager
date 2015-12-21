@@ -87,7 +87,7 @@ public class Directory
         return this.metaData;
     }
 
-    private void loadFiles()
+    public void loadFiles()
     {
         this.files = this.metaData.getFiles();
     }

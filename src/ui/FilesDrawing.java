@@ -29,7 +29,6 @@ public class FilesDrawing
 
             this.screen.putString(column, row++, this.getFileName(item), this.getItemColor(item), backgroundColor, ScreenCharacterStyle.Bold);
         }
-
     }
 
     public void filesDrawingBasicLeft(File selectedFile, Directory directory, boolean checkSelected)
