@@ -37,7 +37,7 @@ public class StringLlist
         PanelDraw panelDraw = new PanelDraw(screen);
         FilesDrawing filesDrawing = new FilesDrawing(screen, cursor);
         FileOperations fileOperations = new FileOperations();
-        BarDrawer barDrawer = new BarDrawer(screen, new DefaultBar());
+        BarDrawer barDrawer = new BarDrawer(screen);
 
         Directory directory = this.directoryLeft;
 

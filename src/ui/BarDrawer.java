@@ -7,12 +7,10 @@ import com.googlecode.lanterna.terminal.Terminal;
 public class BarDrawer
 {
     private Screen screen;
-    private DefaultBar defaultBar;
 
-    public BarDrawer(Screen screen, DefaultBar defaultBar)
+    public BarDrawer(Screen screen)
     {
         this.screen = screen;
-        this.defaultBar = defaultBar;
     }
 
     public void barDrawing(Bar bar)
