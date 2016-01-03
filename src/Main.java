@@ -16,10 +16,6 @@ public class Main
         screen.startScreen();
         StringLlist str = new StringLlist(directoryLeft, directoryRight, screen, terminal);
 
-        //OldDirectory dir = new OldDirectory(new FilesRepository());
-        //dir.forward("E:\\");
-        //new FileManager().terminal(dir);
-
         str.terminal();
     }
 }

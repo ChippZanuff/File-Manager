@@ -2,6 +2,7 @@ package ui;
 
 
 import biz.Directory;
+import biz.SelectedFiles;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.ScreenCharacterStyle;
 import com.googlecode.lanterna.terminal.Terminal;
@@ -12,11 +13,13 @@ public class FilesDrawing
 {
     private Screen screen;
     private Cursor cursor;
+    private SelectedFiles selectedFiles;
 
-    public FilesDrawing(Screen screen, Cursor cursor)
+    public FilesDrawing(Screen screen, Cursor cursor, SelectedFiles selectedFiles)
     {
         this.screen = screen;
         this.cursor = cursor;
+        this.selectedFiles = selectedFiles;
     }
 
     public void filesDrawingBasic(File selectedFile, Directory directory, boolean checkSelected, int column)
@@ -29,7 +32,6 @@ public class FilesDrawing
 
             this.screen.putString(column, row++, this.getFileName(item), this.getItemColor(item), backgroundColor, ScreenCharacterStyle.Bold);
         }
-
     }
 
     public void filesDrawingBasicLeft(File selectedFile, Directory directory, boolean checkSelected)
@@ -58,6 +60,10 @@ public class FilesDrawing
         {
             return Terminal.Color.WHITE;
         }
+        /*else if(this.ifSelectedByInsert(file))
+        {
+            return Terminal.Color.YELLOW;
+        }*/
         return Terminal.Color.CYAN;
     }
 
@@ -78,5 +84,17 @@ public class FilesDrawing
         char[] ch = new char[length];
         String horizontal = String.valueOf(ch).replace('\u0000', ' ');
         return file.getName() + horizontal;
+    }
+
+    private boolean ifSelectedByInsert(File file)
+    {
+        for(File select : selectedFiles.getList())
+        {
+            if(file.getName().contains(select.getName()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
