@@ -27,19 +27,25 @@ public class StringLlist
         int topRowPosition = 1;
         int bottomRowPosition = 3;
         int marginColumnPosition = 1;
+        int colForNotifications = ((screen.getTerminalSize().getRows() - 8) / 2) - 1;
+        int rowForNotifications = ((screen.getTerminalSize().getColumns() - 30) / 2) - 1;
 
         boolean altIsPressed = false;
         boolean ctrlIsPressed = false;
+        boolean notificationYesNo = false;
+        boolean notificationExit = false;
 
         Key key = null;
         Key notifkey = null;
 
         Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition, marginColumnPosition);
         PanelDraw panelDraw = new PanelDraw(screen);
-        FilesDrawing filesDrawing = new FilesDrawing(screen, cursor);
+        SelectedFiles selectedFiles = new SelectedFiles();
+        FilesDrawing filesDrawing = new FilesDrawing(screen, cursor, selectedFiles);
         FileOperations fileOperations = new FileOperations();
         BarDrawer barDrawer = new BarDrawer(screen, new DefaultBar());
-        Notifications notifications = new Notifications(screen);
+        Notifications notifications = new Notifications(screen, colForNotifications, rowForNotifications);
+
 
         Directory directory = this.directoryLeft;
 
@@ -49,6 +55,7 @@ public class StringLlist
             {
                 System.out.println("File pos:" + directory.getFilePosition(cursor));
                 System.out.println("File row pos:" + cursor.getRowPosition());
+                System.out.println("File col pos:" + cursor.getColumn());
                 System.out.println(key.getKind().name());
 
                 File rootDirectory = directory.getFile(0);
@@ -114,29 +121,50 @@ public class StringLlist
 
                         break;
                     case Delete:
-                        while (key == null || key.getCharacter() != '\n')
+                        while (!notificationExit)
                         {
                             if (key != null)
                             {
                                 switch (key.getKind())
                                 {
                                     case ArrowLeft:
-                                        cursor.moveLeft();
+                                        notificationYesNo = true;
                                         break;
                                     case ArrowRight:
-                                        cursor.moveRight();
+                                        notificationYesNo = false;
                                         break;
                                     case Enter:
-                                        //if()
+                                        if(notificationYesNo)
+                                        {
+                                            fileOperations.delete(currentFile);
+                                            directory.loadFiles();
+                                            notificationExit = true;
+                                            cursor.moveUp();
+                                        }
+                                        else
+                                        {
+                                            notificationExit = true;
+                                        }
                                         break;
                                 }
-                                notifications.notificationPanelDrawing();
+                                notifications.deletion(notificationYesNo);
+
                                 this.screen.refresh();
+                                this.screen.getTerminal().setCursorVisible(false);
                             }
                             key = terminal.readInput();
-
                         }
-                        //fileOperations.delete(currentFile);
+                        screen.clear();
+                        break;
+                    case PageDown:
+                        directory.pagingDown();
+                        screen.clear();
+                        break;
+                    case PageUp:
+                        directory.pagingUp();
+                        break;
+                    case Insert:
+                        selectedFiles.addSelectedFileInList(currentFile);
                         break;
                 }
 
@@ -166,7 +194,7 @@ public class StringLlist
                 barDrawer.barDrawing(new DefaultBar());
 
                 this.screen.refresh();
-                System.out.println(topRowPosition);
+                notificationExit = false;
                 this.screen.getTerminal().setCursorVisible(false);
             }
             key = terminal.readInput();
