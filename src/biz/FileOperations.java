@@ -19,18 +19,51 @@ public class FileOperations
         }
     }
 
-    public void delete(File currentFile)
+    public boolean delete(File currentFile)
     {
-        try
+        if(currentFile.isDirectory())
         {
+            File[] files = currentFile.listFiles();
+            if(null!=files)
+            {
+                for(int i=0; i<files.length; i++)
+                {
+                    if(files[i].isDirectory())
+                    {
+                        deleteDirectories(files[i]);
+                    }
+                    else
+                    {
+                        if(files[i].delete())
+                        {
+                            System.out.println(files[i].getName() + "is deleted succecfully");
+                        }
+                    }
+                }
+            }
             if(currentFile.delete())
             {
-                System.out.println(currentFile.getName() + " is deleted!");
+                System.out.println(currentFile.getName() + " is deleted succecfully");
             }
         }
-        catch (Exception e)
+        if(currentFile.delete())
         {
-            System.out.println(e.getMessage());
+            System.out.println(currentFile.getName() + "is deleted succecfully");
+            return currentFile.delete();
         }
+        return currentFile.delete();
+    }
+
+    private boolean deleteDirectories(File file)
+    {
+        if(file.isDirectory())
+        {
+            this.delete(file);
+        }
+        else if((file.delete()))
+        {
+            System.out.println(file.getName() + " is deleted!");
+        }
+        return file.delete();
     }
 }
