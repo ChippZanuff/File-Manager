@@ -30,7 +30,7 @@ public class FileOperations
                 {
                     if(files[i].isDirectory())
                     {
-                        deleteDirectories(files[i]);
+                        this.delete(files[i]);
                     }
                     else
                     {
@@ -41,29 +41,7 @@ public class FileOperations
                     }
                 }
             }
-            if(currentFile.delete())
-            {
-                System.out.println(currentFile.getName() + " is deleted succecfully");
-            }
-        }
-        if(currentFile.delete())
-        {
-            System.out.println(currentFile.getName() + "is deleted succecfully");
-            return currentFile.delete();
         }
         return currentFile.delete();
-    }
-
-    private boolean deleteDirectories(File file)
-    {
-        if(file.isDirectory())
-        {
-            this.delete(file);
-        }
-        else if((file.delete()))
-        {
-            System.out.println(file.getName() + " is deleted!");
-        }
-        return file.delete();
     }
 }

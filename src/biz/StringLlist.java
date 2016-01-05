@@ -155,16 +155,6 @@ public class StringLlist
                         }
                         screen.clear();
                         break;
-                    case PageDown:
-                        directory.pagingDown();
-                        screen.clear();
-                        break;
-                    case PageUp:
-                        directory.pagingUp();
-                        break;
-                    case Insert:
-                        selectedFiles.addSelectedFileInList(currentFile);
-                        break;
                 }
 
                 if(altIsPressed)
