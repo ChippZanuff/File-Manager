@@ -33,11 +33,12 @@ public class StringLlist
 
         Key key = null;
 
+        SelectedFiles selectedFiles = new SelectedFiles();
         Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition, marginColumnPosition);
         PanelDraw panelDraw = new PanelDraw(screen);
-        FilesDrawing filesDrawing = new FilesDrawing(screen, cursor);
         FileOperations fileOperations = new FileOperations();
         BarDrawer barDrawer = new BarDrawer(screen);
+        FilesDrawing filesDrawing = new FilesDrawing(screen, cursor, selectedFiles);
 
         Directory directory = this.directoryLeft;
 
@@ -113,6 +114,17 @@ public class StringLlist
                         break;
                     case Delete:
                         fileOperations.delete(currentFile);
+                        break;
+                    case Insert:
+                        selectedFiles.addSelectedFileInList(currentFile);
+                        if(cursor.isBottom())
+                        {
+                            directory.increment();
+                        }
+                        else if(directory.getFileCount() > cursor.getRowPosition())
+                        {
+                            cursor.moveDown();
+                        }
                         break;
                 }
 
