@@ -60,6 +60,6 @@ public class SelectedFiles
 
     private void clearSelectedFiles()
     {
-        
+        this.selectedFiles.clear();
     }
 }
