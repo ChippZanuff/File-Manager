@@ -58,8 +58,13 @@ public class SelectedFiles
         return false;
     }
 
-    private void clearSelectedFiles()
+    public void clearSelectedFiles()
     {
         this.selectedFiles.clear();
+    }
+
+    public boolean filesCheck()
+    {
+        return this.selectedFiles.size() != 0;
     }
 }

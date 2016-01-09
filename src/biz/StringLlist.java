@@ -135,10 +135,21 @@ public class StringLlist
                                     case Enter:
                                         if(notificationYesNo)
                                         {
-                                            fileOperations.delete(currentFile);
-                                            directory.loadFiles();
-                                            notificationExit = true;
-                                            cursor.moveUp();
+                                            if(selectedFiles.filesCheck())
+                                            {
+                                                fileOperations.deleteSelectedFiles(selectedFiles);
+                                                directory.loadFiles();
+                                                selectedFiles.clearSelectedFiles();
+                                                notificationExit = true;
+                                                cursor.moveUp();
+                                            }
+                                            else
+                                            {
+                                                fileOperations.delete(currentFile);
+                                                directory.loadFiles();
+                                                notificationExit = true;
+                                                cursor.moveUp();
+                                            }
                                         }
                                         else
                                         {
