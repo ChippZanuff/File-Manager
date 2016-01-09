@@ -61,7 +61,6 @@ public class PanelDraw
 
         this.displayLine(this.screen.getTerminalSize().getRows() - this.rowsMargin, "╚" + horizontal + "╝");
         this.displayLine(this.screen.getTerminalSize().getColumns() / 2 - 1, this.screen.getTerminalSize().getRows() - this.rowsMargin, "╩");
-
         this.screen.putString((this.screen.getTerminalSize().getColumns()  - metaSize) / 2, row, metaData.LocalFilePath(metaData.getPath()), Terminal.Color.GREEN, Terminal.Color.DEFAULT, ScreenCharacterStyle.Bold);
     }
 

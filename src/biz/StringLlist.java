@@ -40,8 +40,7 @@ public class StringLlist
 
         Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition, marginColumnPosition);
         PanelDraw panelDraw = new PanelDraw(screen);
-        SelectedFiles selectedFiles = new SelectedFiles();
-        FilesDrawing filesDrawing = new FilesDrawing(screen, cursor, selectedFiles);
+        FilesDrawing filesDrawing = new FilesDrawing(screen, cursor);
         FileOperations fileOperations = new FileOperations();
         BarDrawer barDrawer = new BarDrawer(screen);
         Notifications notifications = new Notifications(screen, colForNotifications, rowForNotifications);
