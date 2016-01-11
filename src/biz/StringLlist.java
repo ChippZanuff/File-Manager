@@ -177,6 +177,11 @@ public class StringLlist
                             cursor.moveDown();
                         }
                         break;
+                    case PageDown:
+                        directory.paginationDown();
+                        break;
+                    case PageUp:
+                        directory.paginationUp();
                 }
 
                 if(altIsPressed)
