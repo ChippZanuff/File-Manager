@@ -45,7 +45,6 @@ public class FilesDrawing
             Terminal.Color backgroundColor = this.getBackgroundItemColor(cursorFile, item, checkSelected);
             this.screen.putString(column, row++, this.getFileName(item), selectedFile, backgroundColor, ScreenCharacterStyle.Bold);
         }
-
     }
 
     public void filesDrawingBasicLeft(File selectedFile, Directory directory, boolean checkSelected)
@@ -95,4 +94,5 @@ public class FilesDrawing
         String horizontal = String.valueOf(ch).replace('\u0000', ' ');
         return file.getName() + horizontal;
     }
+
 }

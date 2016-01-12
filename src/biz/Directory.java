@@ -87,7 +87,7 @@ public class Directory
         return this.metaData;
     }
 
-    private void loadFiles()
+    public void loadFiles()
     {
         this.files = this.metaData.getFiles();
     }
@@ -102,5 +102,27 @@ public class Directory
     {
         this.metaData.showRoots();
         this.loadFiles();
+    }
+
+    public void paginationUp()
+    {
+        for(int i = 0; i < this.limit - 4; i++)
+        {
+            if (this.skip != 0)
+            {
+                this.skip--;
+            }
+        }
+    }
+
+    public void paginationDown()
+    {
+        for(int i = 0; i < this.limit - 4; i++)
+        {
+            if (this.getFileCount() > (this.skip + this.limit))
+            {
+                this.skip++;
+            }
+        }
     }
 }

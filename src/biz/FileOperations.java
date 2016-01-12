@@ -19,18 +19,66 @@ public class FileOperations
         }
     }
 
-    public void delete(File currentFile)
+    public boolean delete(File currentFile)
     {
-        try
+        if(currentFile.isDirectory())
         {
-            if(currentFile.delete())
+            File[] files = currentFile.listFiles();
+            if(null!=files)
             {
-                System.out.println(currentFile.getName() + " is deleted!");
+                for(int i=0; i<files.length; i++)
+                {
+                    if(files[i].isDirectory())
+                    {
+                        this.delete(files[i]);
+                    }
+                    else
+                    {
+                        if(files[i].delete())
+                        {
+                            System.out.println(files[i].getName() + "is deleted succecfully");
+                        }
+                    }
+                }
             }
         }
-        catch (Exception e)
+        return currentFile.delete();
+    }
+
+    public void deleteSelectedFiles(SelectedFiles selectedFiles)
+    {
+        for(File selected : selectedFiles.getList())
         {
-            System.out.println(e.getMessage());
+            if(selected.isDirectory())
+            {
+                File[] files = selected.listFiles();
+                if(null!=files)
+                {
+                    for(int i=0; i<files.length; i++)
+                    {
+                        if(files[i].isDirectory())
+                        {
+                            this.delete(files[i]);
+                        }
+                        else
+                        {
+                            if(files[i].delete())
+                            {
+                                System.out.println(files[i].getName() + "is deleted succecfully");
+                            }
+                        }
+                    }
+                }
+                if(selected.delete())
+                {
+                    
+                }
+            }
+            else if(selected.delete())
+            {
+
+            }
         }
+
     }
 }
