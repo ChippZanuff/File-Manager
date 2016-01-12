@@ -106,7 +106,7 @@ public class Directory
 
     public void paginationUp()
     {
-        for(int i = 0; i < this.limit - 3; i++)
+        for(int i = 0; i < this.limit - 4; i++)
         {
             if (this.skip != 0)
             {
@@ -117,7 +117,7 @@ public class Directory
 
     public void paginationDown()
     {
-        for(int i = 0; i < this.limit - 3; i++)
+        for(int i = 0; i < this.limit - 4; i++)
         {
             if (this.getFileCount() > (this.skip + this.limit))
             {
