@@ -1,10 +1,21 @@
 package biz;
 
+import ui.FolderCreationNotify;
+
 import java.io.File;
 import java.io.IOException;
 
 public class FileOperations
 {
+    private MetaData metaData;
+    private FolderCreationNotify folderCreationNotify;
+
+    public FileOperations(MetaData metaData, FolderCreationNotify folderCreationNotify)
+    {
+        this.metaData = metaData;
+        this.folderCreationNotify = folderCreationNotify;
+    }
+
     public void execute(File file)
     {
         try
@@ -80,5 +91,20 @@ public class FileOperations
             }
         }
 
+    }
+
+    public void folderCreation()
+    {
+        File file = new File(folderCreationNotify.getModifiedMeta());
+        if (!file.exists())
+        {
+            if (file.mkdir())
+            {
+                System.out.println("Successfully created");
+            } else
+            {
+
+            }
+        }
     }
 }

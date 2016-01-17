@@ -11,25 +11,33 @@ public class Notifications
     private int widthOfColumn;
     private int tempRow;
     private int tempColumn;
+    private int lenghtOfNotifyPanel = 0;
     private DeletionNotify deletionNotify = new DeletionNotify();
+    private FolderCreationNotify folderCreationNotify;
 
-    public Notifications(Screen screen, int heightOfNotificationBar, int widthOfColumn)
+    public Notifications(Screen screen, int heightOfNotificationBar, int widthOfColumn, FolderCreationNotify folderCreationNotify)
     {
         this.tempColumn = widthOfColumn;
         this.tempRow = heightOfNotificationBar;
         this.screen = screen;
         this.heightOfNotificationBar = heightOfNotificationBar;
         this.widthOfColumn = widthOfColumn;
+        this.folderCreationNotify = folderCreationNotify;
     }
 
     public void notificationPanelDrawing()
     {
         String BG = "                              ";
         char[] ch = new char[widthOfColumn - 6];
+        this.lenghtOfNotifyPanel = BG.length() + 14;
         String horizontalLine = this.replaceString(String.valueOf(ch), '\u0000', '━');
         for (int i = 0; i < 8; i++)
         {
             this.screen.putString(this.widthOfColumn, this.heightOfNotificationBar++, BG, Terminal.Color.DEFAULT, Terminal.Color.CYAN);
+            if(i == 0)
+            {
+                this.screen.putString(this.widthOfColumn, this.heightOfNotificationBar++, BG, Terminal.Color.BLUE, Terminal.Color.WHITE);
+            }
         }
 
         this.resetColRow();
@@ -80,5 +88,22 @@ public class Notifications
         }
 
 
+    }
+
+    public void makeFolder(boolean check)
+    {
+        this.notificationPanelDrawing();
+        screen.putString((this.widthOfColumn + this.lenghtOfNotifyPanel + this.folderCreationNotify.notify.length()) / 2, this.heightOfNotificationBar, this.folderCreationNotify.notify, Terminal.Color.BLUE, Terminal.Color.CYAN);
+        screen.putString(this.widthOfColumn + 1, this.heightOfNotificationBar + 1, this.folderCreationNotify.getWithMeta(), Terminal.Color.BLUE, Terminal.Color.WHITE);
+        if(check)
+        {
+            screen.putString((this.widthOfColumn + 7), (this.heightOfNotificationBar + 4), this.folderCreationNotify.yes, Terminal.Color.BLUE, Terminal.Color.YELLOW);
+            screen.putString((this.widthOfColumn + 22), (this.heightOfNotificationBar + 4), this.folderCreationNotify.no, Terminal.Color.BLUE, Terminal.Color.CYAN);
+        }
+        if(!check)
+        {
+            screen.putString((this.widthOfColumn + 22), (this.heightOfNotificationBar + 4), this.folderCreationNotify.no, Terminal.Color.BLUE, Terminal.Color.YELLOW);
+            screen.putString((this.widthOfColumn + 7), (this.heightOfNotificationBar + 4), this.folderCreationNotify.yes, Terminal.Color.BLUE, Terminal.Color.CYAN);
+        }
     }
 }
