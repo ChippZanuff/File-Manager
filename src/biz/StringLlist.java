@@ -6,6 +6,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 import ui.*;
 
 import java.io.File;
+import java.io.IOException;
 
 public class StringLlist
 {
@@ -15,8 +16,9 @@ public class StringLlist
     Terminal terminal;
     FolderCreationNotify folderCreationNotify;
     FileOperations fileOperations;
+    FileCopy fileCopy;
 
-    public StringLlist(Directory directoryLeft, Directory directoryRight,Screen screen, Terminal terminal, FolderCreationNotify folderCreationNotify, FileOperations fileOperations)
+    public StringLlist(Directory directoryLeft, Directory directoryRight,Screen screen, Terminal terminal, FolderCreationNotify folderCreationNotify, FileOperations fileOperations, FileCopy fileCopy)
     {
         this.directoryLeft = directoryLeft;
         this.directoryRight = directoryRight;
@@ -24,6 +26,7 @@ public class StringLlist
         this.terminal = terminal;
         this.folderCreationNotify = folderCreationNotify;
         this.fileOperations = fileOperations;
+        this.fileCopy = fileCopy;
     }
 
     public void terminal()
@@ -45,8 +48,10 @@ public class StringLlist
         PanelDraw panelDraw = new PanelDraw(screen);
 
         BarDrawer barDrawer = new BarDrawer(screen);
-        Notifications notifications = new Notifications(screen, colForNotifications, rowForNotifications, folderCreationNotify);
+
+        Notifications notifications = new Notifications(screen, colForNotifications, rowForNotifications, folderCreationNotify, fileCopy);
         FilesDrawing filesDrawing = new FilesDrawing(screen, cursor, selectedFiles);
+
         Input input = new Input();
 
         Directory directory = this.directoryLeft;
@@ -107,9 +112,7 @@ public class StringLlist
                         this.screen.clear();
                         break;
                     case Tab:
-
                         cursor.changeColumn();
-
                         if (cursor.isPositionLeft())
                         {
                             directory = this.directoryLeft;
@@ -118,9 +121,7 @@ public class StringLlist
                         {
                             directory = this.directoryRight;
                         }
-
                         cursor.resetRowPosition();
-
                         break;
                     case Delete:
                         while (!notificationExit)
@@ -138,26 +139,19 @@ public class StringLlist
                                     case Enter:
                                         if(notificationYesNo)
                                         {
-                                            if(selectedFiles.filesCheck())
+                                            if(! selectedFiles.filesCheck())
                                             {
-                                                fileOperations.deleteSelectedFiles(selectedFiles);
-                                                directory.loadFiles();
-                                                selectedFiles.clearSelectedFiles();
-                                                notificationExit = true;
-                                                cursor.moveUp();
+                                                fileOperations.delete(selectedFiles);
                                             }
                                             else
                                             {
                                                 fileOperations.delete(currentFile);
-                                                directory.loadFiles();
-                                                notificationExit = true;
-                                                cursor.moveUp();
                                             }
+                                            selectedFiles.clearSelectedFiles();
+                                            directory.loadFiles();
+                                            cursor.moveUp();
                                         }
-                                        else
-                                        {
-                                            notificationExit = true;
-                                        }
+                                        notificationExit = true;
                                         break;
                                 }
                                 notifications.deletion(notificationYesNo);
@@ -187,7 +181,6 @@ public class StringLlist
                         directory.paginationUp();
                         break;
                     case F7:
-                        //folderCreationNotify.getModifiedMeta();
                         while (!notificationExit)
                         {
                             if (key != null)
@@ -212,12 +205,8 @@ public class StringLlist
                                         {
                                             fileOperations.folderCreation();
                                             directory.loadFiles();
-                                            notificationExit = true;
                                         }
-                                        else
-                                        {
-                                            notificationExit = true;
-                                        }
+                                        notificationExit = true;
                                         break;
                                 }
                                 notifications.makeFolder(notificationYesNo);
@@ -229,16 +218,73 @@ public class StringLlist
                         }
                         screen.clear();
                         break;
+                    case F5:
+                        fileCopy.setFileName(currentFile.getName());
+                        while (!notificationExit)
+                        {
+                            if (key != null)
+                            {
+                                switch (key.getKind())
+                                {
+                                    case ArrowLeft:
+                                        notificationYesNo = true;
+                                        break;
+                                    case ArrowRight:
+                                        notificationYesNo = false;
+                                        break;
+                                    case Backspace:
+                                        fileCopy.backSpace();
+                                        break;
+                                    case NormalKey:
+                                        input.setChar(key.getCharacter());
+                                        this.fileCopy.inputString(input);
+                                        break;
+                                    case Enter:
+                                        if (notificationYesNo)
+                                        {
+                                            File destination = directoryRight.getMetaData().file;
+                                            if (cursor.isPositionRight())
+                                            {
+                                                destination = directoryLeft.getMetaData().file;
+                                            }
+
+                                            try
+                                            {
+                                                fileCopy.setFilesSize(selectedFiles.getList().size());
+
+                                                if (! selectedFiles.filesCheck()) {
+                                                    this.fileOperations.copyFiles(selectedFiles.getList(), destination);
+                                                } else {
+                                                    this.fileOperations.copyFile(currentFile, destination);
+                                                }
+                                            } catch (IOException e)
+                                            {
+                                                System.out.println(e.getMessage());
+                                            }
+                                            directoryRight.loadFiles();
+                                        }
+                                        notificationExit = true;
+                                        break;
+                                }
+                            }
+                            notifications.copyFiles(notificationYesNo);
+
+                            this.screen.refresh();
+                            this.screen.getTerminal().setCursorVisible(false);
+                            key = terminal.readInput();
+                        }
+                        screen.clear();
+                        break;
                 }
 
-                if(altIsPressed)
+                /*if(altIsPressed)
                 {
                     barDrawer.barDrawing(new AltBar());
                 }
                 else if(ctrlIsPressed)
                 {
                     barDrawer.barDrawing(new CtrlBar());
-                }
+                }*/
 
                 currentFile = directory.getFile(cursor);
                 

@@ -4,6 +4,9 @@ import ui.FolderCreationNotify;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 public class FileOperations
 {
@@ -34,77 +37,63 @@ public class FileOperations
     {
         if(currentFile.isDirectory())
         {
-            File[] files = currentFile.listFiles();
-            if(null!=files)
-            {
-                for(int i=0; i<files.length; i++)
-                {
-                    if(files[i].isDirectory())
-                    {
-                        this.delete(files[i]);
-                    }
-                    else
-                    {
-                        if(files[i].delete())
-                        {
-                            System.out.println(files[i].getName() + "is deleted succecfully");
-                        }
-                    }
-                }
-            }
+            this.deleteFiles(currentFile);
         }
         return currentFile.delete();
     }
 
-    public void deleteSelectedFiles(SelectedFiles selectedFiles)
+    public void delete(SelectedFiles selectedFiles)
     {
         for(File selected : selectedFiles.getList())
         {
-            if(selected.isDirectory())
+            if(! selected.isDirectory())
             {
-                File[] files = selected.listFiles();
-                if(null!=files)
-                {
-                    for(int i=0; i<files.length; i++)
-                    {
-                        if(files[i].isDirectory())
-                        {
-                            this.delete(files[i]);
-                        }
-                        else
-                        {
-                            if(files[i].delete())
-                            {
-                                System.out.println(files[i].getName() + "is deleted succecfully");
-                            }
-                        }
-                    }
-                }
-                if(selected.delete())
-                {
-                    
-                }
+                selected.delete();
+                continue;
             }
-            else if(selected.delete())
-            {
-
-            }
+            this.deleteFiles(selected);
         }
 
     }
 
-    public void folderCreation()
+    public void deleteFiles(File source)
     {
-        File file = new File(folderCreationNotify.getModifiedMeta());
-        if (!file.exists())
+        File[] files = source.listFiles();
+        if (null == files)
         {
-            if (file.mkdir())
-            {
-                System.out.println("Successfully created");
-            } else
-            {
+            return;
+        }
 
+        for(File file : files)
+        {
+            if(file.isDirectory())
+            {
+                this.delete(file);
+            }
+            else if(file.delete())
+            {
+                System.out.println(file.getName() + "is deleted succecfully");
             }
         }
+    }
+
+    public boolean folderCreation()
+    {
+        File file = new File(folderCreationNotify.getModifiedMeta());
+        return ! file.exists() && file.mkdir();
+    }
+
+    public void copyFiles(List<File> sourceList, File dest) throws IOException
+    {
+        for (File source : sourceList)
+        {
+            this.copyFile(source, dest);
+        }
+    }
+
+    public void copyFile(File source, File dest) throws IOException
+    {
+        File newDest = new File(dest.getPath() + source.getName());
+        Files.copy(source.toPath(), newDest.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 }
