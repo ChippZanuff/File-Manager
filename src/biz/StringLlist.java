@@ -13,13 +13,17 @@ public class StringLlist
     Directory directoryRight;
     Screen screen;
     Terminal terminal;
+    FolderCreationNotify folderCreationNotify;
+    FileOperations fileOperations;
 
-    public StringLlist(Directory directoryLeft, Directory directoryRight,Screen screen, Terminal terminal)
+    public StringLlist(Directory directoryLeft, Directory directoryRight,Screen screen, Terminal terminal, FolderCreationNotify folderCreationNotify, FileOperations fileOperations)
     {
         this.directoryLeft = directoryLeft;
         this.directoryRight = directoryRight;
         this.screen = screen;
         this.terminal = terminal;
+        this.folderCreationNotify = folderCreationNotify;
+        this.fileOperations = fileOperations;
     }
 
     public void terminal()
@@ -34,17 +38,16 @@ public class StringLlist
         boolean ctrlIsPressed = false;
         boolean notificationYesNo = false;
         boolean notificationExit = false;
-
         Key key = null;
-        Key notifkey = null;
 
         SelectedFiles selectedFiles = new SelectedFiles();
         Cursor cursor = new Cursor(screen,topRowPosition, bottomRowPosition, marginColumnPosition);
         PanelDraw panelDraw = new PanelDraw(screen);
-        FileOperations fileOperations = new FileOperations();
+
         BarDrawer barDrawer = new BarDrawer(screen);
-        Notifications notifications = new Notifications(screen, colForNotifications, rowForNotifications);
+        Notifications notifications = new Notifications(screen, colForNotifications, rowForNotifications, folderCreationNotify);
         FilesDrawing filesDrawing = new FilesDrawing(screen, cursor, selectedFiles);
+        Input input = new Input();
 
         Directory directory = this.directoryLeft;
 
@@ -90,7 +93,7 @@ public class StringLlist
                             directory.setPath(currentFile.getPath());
                         } else if (currentFile.isFile())
                         {
-                            fileOperations.execute(currentFile);
+                            this.fileOperations.execute(currentFile);
                             break;
                         }
                         directory.showFiles();
@@ -182,6 +185,50 @@ public class StringLlist
                         break;
                     case PageUp:
                         directory.paginationUp();
+                        break;
+                    case F7:
+                        //folderCreationNotify.getModifiedMeta();
+                        while (!notificationExit)
+                        {
+                            if (key != null)
+                            {
+                                switch (key.getKind())
+                                {
+                                    case ArrowLeft:
+                                        notificationYesNo = true;
+                                        break;
+                                    case ArrowRight:
+                                        notificationYesNo = false;
+                                        break;
+                                    case Backspace:
+                                        folderCreationNotify.backSpace();
+                                        break;
+                                    case NormalKey:
+                                        input.setChar(key.getCharacter());
+                                        folderCreationNotify.inputString(input);
+                                        break;
+                                    case Enter:
+                                        if(notificationYesNo)
+                                        {
+                                            fileOperations.folderCreation();
+                                            directory.loadFiles();
+                                            notificationExit = true;
+                                        }
+                                        else
+                                        {
+                                            notificationExit = true;
+                                        }
+                                        break;
+                                }
+                                notifications.makeFolder(notificationYesNo);
+
+                                this.screen.refresh();
+                                this.screen.getTerminal().setCursorVisible(false);
+                            }
+                            key = terminal.readInput();
+                        }
+                        screen.clear();
+                        break;
                 }
 
                 if(altIsPressed)
