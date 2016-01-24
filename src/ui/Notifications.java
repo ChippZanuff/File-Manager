@@ -14,8 +14,9 @@ public class Notifications
     private int lenghtOfNotifyPanel = 0;
     private DeletionNotify deletionNotify = new DeletionNotify();
     private FolderCreationNotify folderCreationNotify;
+    private FileCopy fileCopy;
 
-    public Notifications(Screen screen, int heightOfNotificationBar, int widthOfColumn, FolderCreationNotify folderCreationNotify)
+    public Notifications(Screen screen, int heightOfNotificationBar, int widthOfColumn, FolderCreationNotify folderCreationNotify, FileCopy fileCopy)
     {
         this.tempColumn = widthOfColumn;
         this.tempRow = heightOfNotificationBar;
@@ -23,6 +24,7 @@ public class Notifications
         this.heightOfNotificationBar = heightOfNotificationBar;
         this.widthOfColumn = widthOfColumn;
         this.folderCreationNotify = folderCreationNotify;
+        this.fileCopy = fileCopy;
     }
 
     public void notificationPanelDrawing()
@@ -95,6 +97,23 @@ public class Notifications
         this.notificationPanelDrawing();
         screen.putString((this.widthOfColumn + this.lenghtOfNotifyPanel + this.folderCreationNotify.notify.length()) / 2, this.heightOfNotificationBar, this.folderCreationNotify.notify, Terminal.Color.BLUE, Terminal.Color.CYAN);
         screen.putString(this.widthOfColumn + 1, this.heightOfNotificationBar + 1, this.folderCreationNotify.getWithMeta(), Terminal.Color.BLUE, Terminal.Color.WHITE);
+        if(check)
+        {
+            screen.putString((this.widthOfColumn + 7), (this.heightOfNotificationBar + 4), this.folderCreationNotify.yes, Terminal.Color.BLUE, Terminal.Color.YELLOW);
+            screen.putString((this.widthOfColumn + 22), (this.heightOfNotificationBar + 4), this.folderCreationNotify.no, Terminal.Color.BLUE, Terminal.Color.CYAN);
+        }
+        if(!check)
+        {
+            screen.putString((this.widthOfColumn + 22), (this.heightOfNotificationBar + 4), this.folderCreationNotify.no, Terminal.Color.BLUE, Terminal.Color.YELLOW);
+            screen.putString((this.widthOfColumn + 7), (this.heightOfNotificationBar + 4), this.folderCreationNotify.yes, Terminal.Color.BLUE, Terminal.Color.CYAN);
+        }
+    }
+
+    public void copyFiles(boolean check)
+    {
+        this.notificationPanelDrawing();
+        screen.putString((this.widthOfColumn + lenghtOfNotifyPanel + 16) / 2, this.heightOfNotificationBar, this.fileCopy.copyNotify, Terminal.Color.BLUE, Terminal.Color.CYAN);
+        screen.putString(this.widthOfColumn + 1, this.heightOfNotificationBar + 1, fileCopy.getFileName(), Terminal.Color.BLUE, Terminal.Color.WHITE);
         if(check)
         {
             screen.putString((this.widthOfColumn + 7), (this.heightOfNotificationBar + 4), this.folderCreationNotify.yes, Terminal.Color.BLUE, Terminal.Color.YELLOW);
